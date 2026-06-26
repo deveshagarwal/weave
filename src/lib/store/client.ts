@@ -34,8 +34,18 @@ async function makeBackend(): Promise<Backend> {
   const { PGlite } = await import("@electric-sql/pglite");
   const fs = await import("node:fs");
   const path = await import("node:path");
-  const dir = path.join(process.cwd(), "data", "weave-pg");
-  fs.mkdirSync(dir, { recursive: true });
+  const os = await import("node:os");
+  // Prefer ./data locally (persists). On a read-only serverless filesystem
+  // (e.g. Vercel without a Postgres store) fall back to the writable temp dir so
+  // the app still renders. Note: temp storage is ephemeral and per-instance, so
+  // production should set DATABASE_URL / POSTGRES_URL to a real Postgres.
+  let dir = path.join(process.cwd(), "data", "weave-pg");
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch {
+    dir = path.join(os.tmpdir(), "weave-pg");
+    fs.mkdirSync(dir, { recursive: true });
+  }
   const db = new PGlite(dir);
   const backend: Backend = {
     query: async (text, params) => {
