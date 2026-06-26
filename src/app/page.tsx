@@ -5,6 +5,7 @@ import { getCurrentMemberId } from "@/lib/session";
 import { landing } from "@/content/landing";
 import EmbeddingSpace from "@/components/EmbeddingSpace";
 import Logo from "@/components/Logo";
+import JoinCTA from "@/components/JoinCTA";
 
 export default async function Landing() {
   await ensureSeeded();
@@ -38,9 +39,12 @@ export default async function Landing() {
           </h1>
           <p className="mt-7 text-lg text-white/60 leading-relaxed max-w-md">{landing.hero.sub}</p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3 pointer-events-auto">
-            <Link href={primaryHref} className="btn btn-primary text-base px-6 py-3">
-              {primaryLabel}
-            </Link>
+            <JoinCTA
+              signedIn={signedIn}
+              href={primaryHref}
+              label={primaryLabel}
+              className="btn btn-primary text-base px-6 py-3"
+            />
             <Link
               href="#work"
               className="btn text-base px-6 py-3 border border-white/25 text-white hover:bg-white/10"
@@ -113,9 +117,12 @@ export default async function Landing() {
         <div className="card px-8 py-14 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">{landing.cta.heading}</h2>
           <p className="mt-3 text-[var(--muted)] max-w-lg mx-auto">{landing.cta.sub(count)}</p>
-          <Link href={primaryHref} className="btn btn-primary mt-7 text-base px-7 py-3">
-            {primaryLabel}
-          </Link>
+          <JoinCTA
+            signedIn={signedIn}
+            href={primaryHref}
+            label={primaryLabel}
+            className="btn btn-primary mt-7 text-base px-7 py-3"
+          />
         </div>
       </section>
 
