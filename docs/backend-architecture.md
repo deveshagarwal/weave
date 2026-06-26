@@ -1,6 +1,6 @@
-# Weave Backend Architecture
+# Ambit Backend Architecture
 
-Decision doc for the people / skills / needs knowledge graph that powers Weave. It is written to optimize for **both** ends at once: maximum match quality and trust at today's scale (thousands of members, little outcome data), and a clean path to millions of members and hundreds of millions of edges with no rewrite.
+Decision doc for the people / skills / needs knowledge graph that powers Ambit. It is written to optimize for **both** ends at once: maximum match quality and trust at today's scale (thousands of members, little outcome data), and a clean path to millions of members and hundreds of millions of edges with no rewrite.
 
 It supersedes the first synthesis and is built on the four research briefs in `docs/research/` (data model, ingestion, freshness, retrieval).
 
@@ -197,7 +197,7 @@ Apply the Section 6 triggers as they actually bite: swap pgvector for Qdrant/Mil
 - **Popularity bias** in outcome-trained ranking needs an explicit diversity objective before any GNN ships.
 - **Single-provider (DeepSeek) dependency** across extraction, reranking, and reasoning; the function-call contract is the abstraction boundary, keep it provider-agnostic.
 - **Cold start** for brand-new members with no edges needs a deliberate content-only fallback until the graph fills in.
-- **Threshold accuracy**: the swap triggers are research estimates, not measured on Weave's workload. Instrument vector count, active edge count, traversal depth, and filtered p99 from Phase 0 so every split is data-driven.
+- **Threshold accuracy**: the swap triggers are research estimates, not measured on Ambit's workload. Instrument vector count, active edge count, traversal depth, and filtered p99 from Phase 0 so every split is data-driven.
 
 ---
 

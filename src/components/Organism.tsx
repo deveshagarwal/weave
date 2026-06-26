@@ -18,7 +18,7 @@ interface Message {
 }
 
 const GREETING =
-  "I'm Weave, the whole network speaking as one. I hold everyone here, what they can offer and what they're after. Tell me what you need, or who you could help today, and I'll find the right people.";
+  "I'm Ambit, the whole network speaking as one. I hold everyone here, what they can offer and what they're after. Tell me what you need, or who you could help today, and I'll find the right people.";
 
 interface OrganismProps {
   placeholder?: string;

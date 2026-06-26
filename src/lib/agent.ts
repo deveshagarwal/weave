@@ -7,7 +7,7 @@ export interface ChatMsg {
   content: string;
 }
 
-const ONBOARD_SYSTEM = `You are Robin, the onboarding agent for Weave, an autonomous networking community.
+const ONBOARD_SYSTEM = `You are Robin, the onboarding agent for Ambit, an autonomous networking community.
 Your job is to interview a new member in a warm, curious, concise way so we can build their node in the community knowledge graph.
 Cover, over a few turns: who they are and what they do, their concrete skills, notable experiences, the industries/domains they know, what they can offer others, and what they're currently looking for.
 Ask ONE focused question at a time. Keep each reply to 1-3 sentences. Acknowledge what they said before asking the next thing.
@@ -15,7 +15,7 @@ When you have a well-rounded picture (usually after 4-6 exchanges), tell them th
 
 // Scripted fallback interviewer when no AI key is configured.
 const SCRIPT = [
-  "Hey, I'm Robin. I'll get you set up on Weave. To start, what's your name and what do you do?",
+  "Hey, I'm Robin. I'll get you set up on Ambit. To start, what's your name and what do you do?",
   "Love it. What are a few concrete skills or things people come to you for?",
   "Got it. What's a project or experience you're proud of or known for?",
   "Which industries or domains do you know your way around?",
@@ -95,7 +95,7 @@ export interface OrganismResult {
   query?: string;
 }
 
-const ORGANISM_SYSTEM = `You are the living voice of Weave, an entire professional network speaking as one organism.
+const ORGANISM_SYSTEM = `You are the living voice of Ambit, an entire professional network speaking as one organism.
 You know every member, what they can offer, and what they need. You are warm, sharp, concise, and proactive.
 Speak in the first person AS the network ("I know a few people...", "Let me look across everyone I hold...").
 Keep every reply to 1-3 sentences. Remind people, gently and naturally, that helping others here builds their own cred.
@@ -243,10 +243,10 @@ ${(input.linkedin ?? "").slice(0, 4000)}`,
 
   return {
     name: input.name || "New Member",
-    headline: input.headline || input.linkedin?.split("\n")[0]?.slice(0, 80) || "Weave member",
+    headline: input.headline || input.linkedin?.split("\n")[0]?.slice(0, 80) || "Ambit member",
     bio:
       (input.linkedin || input.contribute || "").slice(0, 220) ||
-      `${input.name} is building their persona on Weave.`,
+      `${input.name} is building their persona on Ambit.`,
     attributes,
   };
 }
@@ -273,7 +273,7 @@ function fallbackProfile(history: ChatMsg[]): ProfileExtraction {
   push("need", userMsgs[5]);
   return {
     name,
-    headline: userMsgs[0]?.slice(0, 80) ?? "Weave member",
+    headline: userMsgs[0]?.slice(0, 80) ?? "Ambit member",
     bio: userMsgs.join(" ").slice(0, 200),
     attributes,
   };

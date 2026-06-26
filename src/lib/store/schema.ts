@@ -1,4 +1,4 @@
-// Postgres schema for Weave. The same DDL runs on PGlite (local dev) and on a
+// Postgres schema for Ambit. The same DDL runs on PGlite (local dev) and on a
 // hosted Postgres (Vercel Postgres / Neon) in production. Forward-compatible:
 // facts are reified, bitemporal, confidence-scored edges; outcomes are logged
 // from day one. Heavy scale pieces (pgvector, AGE) are swap-later behind the

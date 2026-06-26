@@ -1,6 +1,6 @@
-# Weave Research 03 — Freshness & Accuracy: Keeping the Graph True Over Time
+# Ambit Research 03 — Freshness & Accuracy: Keeping the Graph True Over Time
 
-Weave's value collapses if the graph lies. A "need" that closed last month, two nodes that are secretly the same person, a skill someone abandoned in 2022, or a credential nobody verified all degrade match quality and erode trust. This document covers the mechanisms and named technologies for keeping a millions-node professional knowledge graph accurate as reality drifts underneath it.
+Ambit's value collapses if the graph lies. A "need" that closed last month, two nodes that are secretly the same person, a skill someone abandoned in 2022, or a credential nobody verified all degrade match quality and erode trust. This document covers the mechanisms and named technologies for keeping a millions-node professional knowledge graph accurate as reality drifts underneath it.
 
 ## Key mechanisms
 
@@ -10,7 +10,7 @@ Weave's value collapses if the graph lies. A "need" that closed last month, two 
 
 **Truth discovery and provenance.** When sources disagree, do not just majority-vote: weight sources by reliability and iterate. TruthFinder co-estimates fact confidence and source trustworthiness in a mutual-reinforcement loop ([Truth Discovery survey](https://research.usq.edu.au/download/0139ae81792a5393de4828ffbb80aa8d97319c6b921e9f06249b3004f9fcd000/2291991/A_Survey_on_Truth_Discovery_Concepts_Methods_Applications_and_Opportunities.pdf)); evolving-truth variants handle facts that legitimately change over time ([Evolving Truth](https://pmc.ncbi.nlm.nih.gov/articles/PMC4688022/)). Every belief should carry provenance/lineage (which source, when, with what confidence) so conflicts are resolvable and auditable ([Neo4j lineage](https://neo4j.com/blog/graph-database/what-is-data-lineage/)).
 
-**Member-driven correction and feedback.** Outcomes are the strongest signal Weave owns. A successful, karma-rewarded connection reinforces the offer/need/skill edges that produced it; an ignored or rejected match decays them. This is a closed loop: confirmed introductions raise source/edge confidence, "this is no longer relevant" actively expires a need, and an active-learning labeling queue (Zingg's model) turns member corrections into training data for the matcher.
+**Member-driven correction and feedback.** Outcomes are the strongest signal Ambit owns. A successful, karma-rewarded connection reinforces the offer/need/skill edges that produced it; an ignored or rejected match decays them. This is a closed loop: confirmed introductions raise source/edge confidence, "this is no longer relevant" actively expires a need, and an active-learning labeling queue (Zingg's model) turns member corrections into training data for the matcher.
 
 **Change data capture (CDC).** To stay consistent without nightly full recompute, stream row-level changes from the primary store and recompute only affected blocks/embeddings/clusters. Debezium emits Postgres/MySQL/Mongo changes to Kafka for incremental indexing and search-index invalidation ([Debezium/Confluent](https://www.confluent.io/resources/kafka-summit-2020/change-data-capture-pipelines-with-debezium-and-kafka-streams/); [Conduktor CDC](https://www.conduktor.io/glossary/what-is-change-data-capture-cdc-fundamentals)).
 
@@ -23,7 +23,7 @@ Weave's value collapses if the graph lies. A "need" that closed last month, two 
 - **AWS Entity Resolution**: a managed framework brokering backends (Senzing, Experian); low ops, AWS lock-in, less transparency ([Splink vs AWS](https://github.com/moj-analytical-services/splink/discussions/2026)).
 - **Embedding/LLM ER (Ditto, Sentence-BERT blocking, LLM matchers)**: best on noisy free-text profiles; GPU cost and latency rise at scale; pairs well as a reranker over cheap blocks ([Ditto](https://arxiv.org/pdf/2004.00584); [Semantic ER](https://towardsdatascience.com/the-rise-of-semantic-entity-resolution/)).
 
-## Recommendation for Weave
+## Recommendation for Ambit
 
 Run a hybrid pipeline. Use the **embeddings you already compute as the blocker** (cosine top-k candidates), then score with **Splink's Fellegi-Sunter model** for explainable, auditable match probabilities; cluster into person-entities with confidence-scored golden records. Reserve a **DeepSeek LLM pass only as a reranker** on the handful of ambiguous mid-confidence pairs, not on every pair. Store every attribute with **provenance and valid_from/valid_to plus a confidence score**, never a bare overwrite. Apply **per-attribute half-life decay** (HALO-style) with domain-tuned half-lives: short for needs (weeks) and current role (months), long for credentials and past experience; auto-flag or expire facts below threshold and prompt re-verification. Close the loop: **connection outcomes and karma reweight edge confidence**, and member "no longer relevant" / "wrong person" actions feed a Zingg-style active-learning queue. Drive incremental maintenance with **Debezium CDC** so only touched entities re-resolve. Adopt **Senzing or AWS Entity Resolution only if** ER ops become a distraction and you accept lock-in.
 

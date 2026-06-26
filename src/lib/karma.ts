@@ -7,7 +7,7 @@ export const KARMA = {
 } as const;
 
 export async function awardJoin(memberId: string): Promise<void> {
-  await addKarma(memberId, KARMA.JOIN, "Joined Weave and shared your knowledge");
+  await addKarma(memberId, KARMA.JOIN, "Joined Ambit and shared your knowledge");
 }
 
 export async function awardConnection(helperId: string, askerId: string): Promise<void> {

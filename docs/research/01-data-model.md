@@ -1,6 +1,6 @@
-# Weave Data Model & Ontology
+# Ambit Data Model & Ontology
 
-Research brief for the people/skills/needs knowledge graph powering Weave. Target: millions of members, hundreds of millions of edges. Author: data architecture research, 2026-06.
+Research brief for the people/skills/needs knowledge graph powering Ambit. Target: millions of members, hundreds of millions of edges. Author: data architecture research, 2026-06.
 
 ## Key mechanisms
 
@@ -10,14 +10,14 @@ A people graph is not a generic social graph. It mixes **identity entities** (me
 
 2. **Reified, weighted relationships.** A `(member)-[HAS_SKILL {confidence, source, level}]->(skill)` edge needs its own properties. Both LPG edges and RDF-star support this; a plain RDF triple cannot carry edge metadata without reification or RDF-star ([AI Business on RDF-star](https://aibusiness.com/data/ending-the-rdf-vs-property-graph-debate-with-rdf-)).
 
-3. **Temporal / bitemporal validity.** Skills, offers, and needs expire. Bitemporal modeling tracks **valid time** (true in the world) separately from **transaction/ingestion time** (when the system learned it). Zep's agent memory graph stores four timestamps per edge (valid-from, valid-to, observed, recorded) and *invalidates rather than deletes* superseded facts, so an agent reasons over the current slice while keeping history ([Zep](https://www.getzep.com/ai-agents/temporal-knowledge-graph/), [bitemporal overview](https://www.emergentmind.com/topics/bitemporal-modeling)). This is directly relevant to Weave's conversational organism, which must reason about what a member needs *now*.
+3. **Temporal / bitemporal validity.** Skills, offers, and needs expire. Bitemporal modeling tracks **valid time** (true in the world) separately from **transaction/ingestion time** (when the system learned it). Zep's agent memory graph stores four timestamps per edge (valid-from, valid-to, observed, recorded) and *invalidates rather than deletes* superseded facts, so an agent reasons over the current slice while keeping history ([Zep](https://www.getzep.com/ai-agents/temporal-knowledge-graph/), [bitemporal overview](https://www.emergentmind.com/topics/bitemporal-modeling)). This is directly relevant to Ambit's conversational organism, which must reason about what a member needs *now*.
 
 ## Options compared (with tradeoffs at scale)
 
 **Data model.**
 - **RDF / triplestore (e.g. GraphDB, Blazegraph):** strongest semantics via OWL/SHACL reasoning and standard vocabularies, ideal for interoperating with ESCO/schema.org. Cost: edge metadata requires reification or RDF-star, and triple counts explode. Five properties per node becomes ~11 triples; a 100M-triple RDF store is roughly equivalent to a 10M-node LPG, an order of magnitude of overhead ([DZone](https://dzone.com/articles/rdf-triple-stores-vs-labeled-property-graphs-whats), [Enterprise Knowledge](https://enterprise-knowledge.com/cutting-through-the-noise-an-introduction-to-rdf-lpg-graphs/)). Triplestores generally trail LPGs on large-scale traversal analytics.
 - **Labeled Property Graph (Neo4j, NebulaGraph, TigerGraph, JanusGraph):** native edge properties, faster traversals, the mainstream choice for social-style workloads. Weaker formal semantics than OWL ([datawalk](https://datawalk.com/property-graph-vs-rdf/)).
-- **Relational-with-graph-extension (Postgres + pgvector, recursive CTEs, or Apache AGE):** keeps Weave's existing SQL mental model and ACID; vectors and rows coexist. Deep multi-hop traversals are slower than a native graph engine, but most Weave queries are 1-2 hops (need -> matching people).
+- **Relational-with-graph-extension (Postgres + pgvector, recursive CTEs, or Apache AGE):** keeps Ambit's existing SQL mental model and ACID; vectors and rows coexist. Deep multi-hop traversals are slower than a native graph engine, but most Ambit queries are 1-2 hops (need -> matching people).
 - **Hybrid:** LPG for traversal + a separate vector index for semantic match + optional RDF/OWL only for the *skill ontology* layer.
 
 **Engines at million-to-billion scale.**
@@ -32,7 +32,7 @@ A people graph is not a generic social graph. It mixes **identity entities** (me
 - **schema.org** (`Person`, `Occupation`, `knowsAbout`) for interop.
 - **Free-text + embeddings vs controlled vocabulary:** the production pattern is *both*. Map free text to canonical concepts with bi-encoder / contrastive models and cosine similarity over embeddings ([SkillMatch / contrastive bi-encoder](https://arxiv.org/pdf/2601.09119), [ESCoE taxonomy](http://escoe-website.s3.amazonaws.com/wp-content/uploads/2018/08/29113127/ESCoE-DP-2018-13.pdf)). LinkedIn does exactly this: mine phrases, disambiguate via co-occurrence, de-dup with word2vec, then a classifier links text to canonical entities with a confidence score ([LinkedIn Engineering](https://www.linkedin.com/blog/engineering/knowledge/building-the-linkedin-knowledge-graph)).
 
-## Recommendation for Weave
+## Recommendation for Ambit
 
 1. **Adopt an LPG model now; defer a distributed engine.** Stay on a relational base (Postgres + pgvector + Apache AGE) for the next phase: ACID, one store for rows + vectors + 1-2 hop graph, and a clean migration from SQLite. Move to **NebulaGraph** only when traversal depth or edge counts (>~10^8 active edges, 3+ hop matching) actually hurt. Do not start on a billion-scale distributed engine you do not yet need.
 2. **Model everything as typed nodes/edges with edge properties.** Reify offers, needs, connections, and karma as first-class edges (or event nodes) carrying `weight`, `confidence`, `source`. Make every fact edge **bitemporal** (valid-from/valid-to + recorded), and invalidate rather than delete, mirroring Zep so the organism reasons over the current slice with full history.

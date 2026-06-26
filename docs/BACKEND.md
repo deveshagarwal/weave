@@ -1,4 +1,4 @@
-# Weave backend
+# Ambit backend
 
 This is the running implementation of the architecture in `backend-architecture.md`.
 Phases 0 and 1 are built: the app runs on Postgres behind swappable seams, with a

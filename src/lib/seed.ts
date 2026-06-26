@@ -210,7 +210,7 @@ export async function seedCommunity(force = false): Promise<number> {
       const m = await createMember({
         name,
         headline: arch.headline,
-        bio: `${arch.headline}. Active member of the Weave community.`,
+        bio: `${arch.headline}. Active member of the Ambit community.`,
         isSynthetic: true,
         karma,
       });
@@ -231,7 +231,7 @@ export async function seedCommunity(force = false): Promise<number> {
     const a = created[i];
     const b = created[(i + 3) % created.length];
     if (a && b && a !== b) {
-      await createConnection({ from: a, to: b, reason: "Met through Weave", askId: null });
+      await createConnection({ from: a, to: b, reason: "Met through Ambit", askId: null });
     }
   }
 

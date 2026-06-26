@@ -4,6 +4,7 @@ import { getMember, memberCount } from "@/lib/store/repo";
 import { getCurrentMemberId } from "@/lib/session";
 import { landing } from "@/content/landing";
 import EmbeddingSpace from "@/components/EmbeddingSpace";
+import Logo from "@/components/Logo";
 
 export default async function Landing() {
   await ensureSeeded();
@@ -15,12 +16,16 @@ export default async function Landing() {
 
   return (
     <div className="text-[var(--foreground)]">
-      {/* HERO: cinematic. The living cloud drifts toward you behind centered text. */}
-      <section className="relative overflow-hidden bg-black text-white min-h-[calc(100svh-3.5rem)] flex items-center justify-center">
+      {/* HERO: cinematic, full screen. The living cloud drifts behind the text. */}
+      <section className="relative overflow-hidden bg-black text-white min-h-[100svh] flex items-center justify-center">
         <div id="space" className="absolute inset-0 wv-drift">
           <EmbeddingSpace mode="ambient" theme="dark" fill />
         </div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,rgba(0,0,0,0.55)_55%,rgba(0,0,0,0.85)_100%)] pointer-events-none" />
+
+        <div className="absolute top-5 left-6 z-10 flex items-center gap-2 font-bold text-lg tracking-tight pointer-events-none">
+          <Logo size={22} className="text-[#a99bff]" /> Ambit
+        </div>
 
         <div className="relative w-full px-5 py-20 text-center flex flex-col items-center pointer-events-none">
           <div className="text-[11px] uppercase tracking-[0.5em] text-white/45 mb-7">
@@ -116,7 +121,9 @@ export default async function Landing() {
 
       <footer className="border-t border-[var(--border)]">
         <div className="max-w-6xl mx-auto px-5 py-8 text-sm text-[var(--muted)] flex items-center justify-between">
-          <span className="font-semibold text-[var(--foreground)]">✦ Weave</span>
+          <span className="font-semibold text-[var(--foreground)] inline-flex items-center gap-2">
+            <Logo size={18} className="text-[var(--accent)]" /> Ambit
+          </span>
           <span>{landing.footer}</span>
         </div>
       </footer>

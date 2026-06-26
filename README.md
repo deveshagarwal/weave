@@ -1,4 +1,4 @@
-# Weave
+# Ambit
 
 Autonomous, agentic networking. Members build a node once through a conversational
 agent; from then on the community lives as a knowledge graph that your agent searches

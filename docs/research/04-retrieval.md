@@ -1,10 +1,10 @@
 # Retrieval and Matching: The "Who Can Help" Query
 
-Research for Weave, an agentic professional networking app where members are nodes in a knowledge graph and a conversational organism agent matches plainly-stated needs to people who can help.
+Research for Ambit, an agentic professional networking app where members are nodes in a knowledge graph and a conversational organism agent matches plainly-stated needs to people who can help.
 
 ## Key mechanisms
 
-**Hybrid retrieval is the consensus pattern.** Pure vector search misses relationship and multi-hop questions; pure graph traversal misses fuzzy semantic similarity. The winning pattern runs both, then fuses: take vector hits as seed nodes, expand context via graph traversal, and merge rankings with Reciprocal Rank Fusion (RRF). Benchmarks attribute 15-30% gains in faithfulness and relevancy to hybrid over vector-only, but only with disciplined depth limits, reranking, and caching ([Calmops](https://calmops.com/algorithms/graphrag-hybrid-retrieval/), [Medium/Graph Praxis](https://medium.com/graph-praxis/hybrid-vector-graph-retrieval-patterns-11fdbd800e3e)). For Weave, a need becomes a query embedding plus structured filters (industry, location, availability), retrieves candidate people via ANN, then traverses the graph for trust paths (shared connections, prior successful intros) before reranking.
+**Hybrid retrieval is the consensus pattern.** Pure vector search misses relationship and multi-hop questions; pure graph traversal misses fuzzy semantic similarity. The winning pattern runs both, then fuses: take vector hits as seed nodes, expand context via graph traversal, and merge rankings with Reciprocal Rank Fusion (RRF). Benchmarks attribute 15-30% gains in faithfulness and relevancy to hybrid over vector-only, but only with disciplined depth limits, reranking, and caching ([Calmops](https://calmops.com/algorithms/graphrag-hybrid-retrieval/), [Medium/Graph Praxis](https://medium.com/graph-praxis/hybrid-vector-graph-retrieval-patterns-11fdbd800e3e)). For Ambit, a need becomes a query embedding plus structured filters (industry, location, availability), retrieves candidate people via ANN, then traverses the graph for trust paths (shared connections, prior successful intros) before reranking.
 
 **Sparse plus dense beats either alone.** Combine BM25 (exact term, rare-skill names like "Rust" or "FDA 510(k)") with dense embeddings (paraphrase, "I need help raising a seed round" matching "early-stage fundraising advisor"). Weaviate's native BM25 + vector fusion is a reference implementation ([tensorblue](https://tensorblue.com/blog/vector-database-comparison-pinecone-weaviate-qdrant-milvus-2025)).
 
@@ -24,7 +24,7 @@ Research for Weave, an agentic professional networking app where members are nod
 
 **Filtering at scale.** Decide pre- vs post-filtering per query by selectivity: pre-filter when the structured constraint is highly selective, post-filter when it is broad; learned query planners now do this adaptively ([arxiv 2602.17914](https://arxiv.org/pdf/2602.17914)).
 
-## Recommendation for Weave
+## Recommendation for Ambit
 
 Stay on Postgres and grow inside it. Use **pgvector (HNSW index) + Apache AGE** so vectors, structured attributes, and the graph live in one transactional store, removing sync complexity at MVP and into the low millions. Replace the homegrown TF-IDF/random-projection embeddings with a hosted model (OpenAI text-embedding-3-small or Cohere embed) and embed needs and offers as separate vectors. Retrieval pipeline: BM25 + dense hybrid -> RRF fusion -> AGE graph expansion for trust paths -> cross-encoder or Cohere rerank on top ~50, with DeepSeek only generating the human-readable "why" for the final shortlist (cheaper and lower-latency than LLM reranking everything). Log every accepted/declined intro and karma signal as labeled edges; that becomes link-prediction and learning-to-rank training data and, later, a GraphSAGE/two-tower model. Migration triggers: when ANN exceeds ~10-50M vectors or filtered-query latency degrades, move vectors to **Qdrant** (best filtering) or **Milvus** (billion-scale) while keeping the graph in Postgres/AGE or a dedicated Neo4j. Defer GNNs until you have outcome data; they are costly to train and tune at scale.
 
