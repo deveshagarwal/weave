@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface Form {
   name: string;
@@ -78,30 +80,31 @@ export default function Onboard() {
   }
 
   const field =
-    "w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] outline-none focus:border-[var(--accent)] text-sm";
+    "w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] outline-none focus:border-[var(--primary)] text-sm";
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-10">
       <div className="mb-7">
-        <div className="text-sm font-semibold text-[var(--accent)] uppercase tracking-wide">
+        <div className="text-sm font-semibold text-[var(--primary)] uppercase tracking-wide">
           Step 1
         </div>
-        <h1 className="text-3xl font-bold tracking-tight mt-1">Build your agent persona</h1>
-        <p className="text-[var(--muted)] mt-2 leading-relaxed">
-          Your agent represents you in the network. Teach it who you are, what you can
-          contribute, and what you need. It uses this to find the right people for you,
-          and to know when you can help someone else.
+        <h1 className="text-3xl font-bold tracking-tight mt-1">
+          Mutual is the agent that connects you
+        </h1>
+        <p className="text-[var(--muted-foreground)] mt-2 leading-relaxed">
+          Tell it more about yourself — who you are, what you can contribute, and what
+          you&rsquo;re looking for. The more Mutual knows, the better the people it brings you.
         </p>
       </div>
 
       {/* Import */}
-      <div className="card p-5 mb-4">
+      <Card className="gap-0 p-5 mb-4">
         <div className="flex items-center justify-between gap-3 mb-1">
           <h2 className="font-semibold">Import from LinkedIn</h2>
-          <span className="text-xs text-[var(--muted)]">optional, speeds this up</span>
+          <span className="text-xs text-[var(--muted-foreground)]">optional, speeds this up</span>
         </div>
-        <p className="text-sm text-[var(--muted)] mb-4">
-          Pull in your details so your agent starts with your skills, experience, and
+        <p className="text-sm text-[var(--muted-foreground)] mb-4">
+          Pull in your details so Mutual starts with your skills, experience, and
           industries. You can edit everything after.
         </p>
         {importState === "done" ? (
@@ -120,21 +123,21 @@ export default function Onboard() {
             {importState === "importing" ? "Importing…" : "Import from LinkedIn"}
           </button>
         )}
-      </div>
+      </Card>
 
       {/* Survey */}
-      <div className="card p-5 flex flex-col gap-4">
-        <h2 className="font-semibold">Tell your agent about you</h2>
+      <Card className="p-5 gap-4">
+        <h2 className="font-semibold">Tell Mutual about you</h2>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
               Name *
             </label>
             <input value={form.name} onChange={set("name")} placeholder="Jordan Rivera" className={`${field} mt-1.5`} />
           </div>
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
               Headline
             </label>
             <input
@@ -147,10 +150,10 @@ export default function Onboard() {
         </div>
 
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+          <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
             What can you contribute to the network?
           </label>
-          <p className="text-xs text-[var(--muted)] mt-0.5">
+          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
             Intros you can make, expertise, advice, anything you can help with. One per line.
           </p>
           <textarea
@@ -163,7 +166,7 @@ export default function Onboard() {
         </div>
 
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+          <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
             What do you need help with right now?
           </label>
           <textarea
@@ -177,7 +180,7 @@ export default function Onboard() {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
               Skills
             </label>
             <input
@@ -188,7 +191,7 @@ export default function Onboard() {
             />
           </div>
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            <label className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
               Industries
             </label>
             <input
@@ -199,17 +202,17 @@ export default function Onboard() {
             />
           </div>
         </div>
-      </div>
+      </Card>
 
       {error && <p className="text-sm text-[var(--accent-2)] mt-3">{error}</p>}
 
       <div className="mt-5 flex items-center justify-between gap-3">
-        <span className="text-xs text-[var(--muted)]">
-          Your agent embeds this into the latent space so the right people can find you.
+        <span className="text-xs text-[var(--muted-foreground)]">
+          Mutual embeds this into the latent space so the right people can find you.
         </span>
-        <button onClick={build} disabled={!canBuild || building} className="btn btn-primary">
-          {building ? "Training your agent…" : "Build my agent persona"}
-        </button>
+        <Button onClick={build} disabled={!canBuild || building}>
+          {building ? "Getting Mutual ready…" : "Tell Mutual about you"}
+        </Button>
       </div>
     </div>
   );

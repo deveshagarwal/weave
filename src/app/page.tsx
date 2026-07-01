@@ -1,139 +1,72 @@
-import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import { ensureSeeded } from "@/lib/bootstrap";
-import { getMember, memberCount } from "@/lib/store/repo";
+import { getMember } from "@/lib/store/repo";
 import { getCurrentMemberId } from "@/lib/session";
 import { landing } from "@/content/landing";
-import EmbeddingSpace from "@/components/EmbeddingSpace";
 import Logo from "@/components/Logo";
 import JoinCTA from "@/components/JoinCTA";
+import HeroCarousel from "@/components/HeroCarousel";
+import LogoMarquee from "@/components/LogoMarquee";
 
 export default async function Landing() {
   await ensureSeeded();
-  const count = await memberCount();
+  const { userId } = await auth();
   const id = await getCurrentMemberId();
-  const signedIn = !!(id && (await getMember(id)));
-  const primaryHref = signedIn ? "/ask" : "/onboard";
-  const primaryLabel = signedIn ? landing.hero.ctaSignedIn : landing.hero.ctaJoin;
+  const hasMember = !!(id && (await getMember(id)));
+  // Authenticated with Clerk: always link (never open the sign-up modal while
+  // signed in). Members go to the app; signed-in-but-unlinked go to onboarding.
+  const signedIn = !!userId;
+  const primaryHref = hasMember ? "/ask" : "/onboard";
+  const primaryLabel = hasMember ? landing.hero.ctaSignedIn : landing.hero.ctaJoin;
 
   return (
-    <div className="text-[var(--foreground)]">
-      {/* HERO: cinematic, full screen. The living cloud drifts behind the text. */}
-      <section className="relative overflow-hidden bg-black text-white min-h-[100svh] flex items-center justify-center">
-        <div id="space" className="absolute inset-0 wv-drift">
-          <EmbeddingSpace mode="ambient" theme="dark" fill />
-        </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,rgba(0,0,0,0.55)_55%,rgba(0,0,0,0.85)_100%)] pointer-events-none" />
-
-        <div className="absolute top-5 left-6 z-10 flex items-center gap-2 font-bold text-lg tracking-tight pointer-events-none">
-          <Logo size={22} className="text-[#a99bff]" /> Ambit
-        </div>
-
-        <div className="relative w-full px-5 py-20 text-center flex flex-col items-center pointer-events-none">
-          <div className="text-[11px] uppercase tracking-[0.5em] text-white/45 mb-7">
-            {landing.hero.kicker}
+    <div className="min-h-screen bg-background text-foreground">
+      {/* HERO: editorial, light. Two columns — the pitch on the left, a fanned
+          carousel of the intros Ambit makes on the right. */}
+      <section className="relative overflow-hidden bg-background pt-6 pb-24 sm:pb-28">
+        {/* Top bar */}
+        <div className="max-w-6xl mx-auto px-5 flex items-center justify-between">
+          <div className="flex items-center gap-2 font-serif font-semibold text-xl tracking-tight">
+            <Logo size={22} className="text-foreground" /> Ambit
           </div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.98] max-w-3xl">
-            {landing.hero.headlineLead}
-            <span className="italic font-light text-[#a99bff]">{landing.hero.headlineAccent}</span>
-            {landing.hero.headlineTail}
-          </h1>
-          <p className="mt-7 text-lg text-white/60 leading-relaxed max-w-md">{landing.hero.sub}</p>
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3 pointer-events-auto">
-            <JoinCTA
-              signedIn={signedIn}
-              href={primaryHref}
-              label={primaryLabel}
-              className="btn btn-primary text-base px-6 py-3"
-            />
-            <Link
-              href="#work"
-              className="btn text-base px-6 py-3 border border-white/25 text-white hover:bg-white/10"
-            >
-              {landing.hero.ctaSecondary}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* JUST ASK */}
-      <section id="work" className="max-w-6xl mx-auto px-5 py-16 border-t border-[var(--border)]">
-        <div className="max-w-2xl mb-8">
-          <div className="text-sm font-semibold text-[var(--accent)] uppercase tracking-wide">
-            {landing.ask.eyebrow}
-          </div>
-          <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight">
-            {landing.ask.heading}
-          </h2>
-          <p className="mt-3 text-[var(--muted)] leading-relaxed max-w-xl">{landing.ask.sub}</p>
+          <JoinCTA signedIn={signedIn} href={primaryHref} label={primaryLabel} />
         </div>
 
-        <div className="cloud-dark rounded-3xl p-3 overflow-hidden">
-          <EmbeddingSpace mode="query" theme="dark" height={460} />
-        </div>
-      </section>
-
-      {/* CRED AND RECIPROCITY */}
-      <section className="max-w-6xl mx-auto px-5 py-16 border-t border-[var(--border)]">
-        <div className="max-w-2xl">
-          <div className="text-sm font-semibold text-[var(--accent)] uppercase tracking-wide">
-            {landing.cred.eyebrow}
-          </div>
-          <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight">
-            {landing.cred.heading}
-          </h2>
-          <p className="mt-3 text-[var(--muted)] leading-relaxed">{landing.cred.sub}</p>
-        </div>
-
-        <div className="mt-10 grid sm:grid-cols-3 gap-4">
-          {landing.cred.examples.map((ex, i) => (
-            <div key={i} className="card p-5">
-              <div className="text-sm font-medium leading-snug">{ex.give}</div>
-              <div className="my-3 flex items-center gap-2 text-[var(--accent)]">
-                <span className="h-px flex-1 bg-[var(--border)]" />
-                <span className="text-xs font-semibold uppercase tracking-wide">builds goodwill</span>
-                <span className="h-px flex-1 bg-[var(--border)]" />
-              </div>
-              <div className="text-sm leading-snug text-[var(--muted)]">{ex.get}</div>
+        <div className="max-w-6xl mx-auto px-5 pt-16 sm:pt-20 flex flex-col items-center gap-14 xl:flex-row xl:items-center xl:gap-10">
+          {/* Left: the pitch */}
+          <div className="w-full xl:w-1/2 flex flex-col items-center text-center xl:items-start xl:text-left">
+            <span className="mt-4 text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+              {landing.hero.kicker}
+            </span>
+            <h1 className="font-serif mt-4 text-5xl sm:text-6xl lg:text-7xl font-medium tracking-tight leading-[1.02]">
+              {landing.hero.headlineLead}
+              <span className="italic font-normal">{landing.hero.headlineAccent}</span>
+              {landing.hero.headlineTail}
+            </h1>
+            <p className="mt-7 text-lg text-muted-foreground leading-relaxed max-w-md">
+              {landing.hero.sub}
+            </p>
+            <div className="mt-9 flex flex-wrap items-center justify-center xl:justify-start gap-3">
+              <JoinCTA
+                signedIn={signedIn}
+                href={primaryHref}
+                label={primaryLabel}
+                size="lg"
+                className="h-11 px-6 text-base"
+              />
+              {/* "See how it works" secondary CTA hidden for now */}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      {/* HOW IT WORKS */}
-      <section id="how" className="max-w-6xl mx-auto px-5 py-16 border-t border-[var(--border)]">
-        <div className="grid sm:grid-cols-3 gap-8">
-          {landing.how.map((c) => (
-            <div key={c.n}>
-              <div className="text-[var(--accent)] font-mono text-sm font-semibold">{c.n}</div>
-              <h3 className="mt-2 font-semibold text-lg">{c.t}</h3>
-              <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">{c.d}</p>
+          {/* Right: the intros, with a drifting strip of scenes above them */}
+          <div className="w-full xl:w-1/2 flex flex-col items-center gap-8">
+            <LogoMarquee />
+            <div id="intros" className="w-full scroll-mt-24">
+              <HeroCarousel />
             </div>
-          ))}
+          </div>
         </div>
       </section>
-
-      {/* FINAL CTA */}
-      <section className="max-w-6xl mx-auto px-5 pb-24">
-        <div className="card px-8 py-14 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">{landing.cta.heading}</h2>
-          <p className="mt-3 text-[var(--muted)] max-w-lg mx-auto">{landing.cta.sub(count)}</p>
-          <JoinCTA
-            signedIn={signedIn}
-            href={primaryHref}
-            label={primaryLabel}
-            className="btn btn-primary mt-7 text-base px-7 py-3"
-          />
-        </div>
-      </section>
-
-      <footer className="border-t border-[var(--border)]">
-        <div className="max-w-6xl mx-auto px-5 py-8 text-sm text-[var(--muted)] flex items-center justify-between">
-          <span className="font-semibold text-[var(--foreground)] inline-flex items-center gap-2">
-            <Logo size={18} className="text-[var(--accent)]" /> Ambit
-          </span>
-          <span>{landing.footer}</span>
-        </div>
-      </footer>
     </div>
   );
 }
